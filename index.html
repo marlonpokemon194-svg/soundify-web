@@ -3,82 +3,89 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Soundify - Upload & Free Songs</title>
+<title>Soundify</title>
 <style>
-body { margin:0; font-family:'Segoe UI',Arial,sans-serif; background:#121212; color:#eee; display:flex; }
-.sidebar { width:250px; background:#1b1b1b; padding:30px 20px; height:100vh; display:flex; flex-direction:column; gap:25px; border-right:2px solid #1db95466; }
+body { margin:0; font-family:'Segoe UI',Arial,sans-serif; background:#121212; color:#eee; display:flex; flex-direction:row; }
+.sidebar { width:250px; background:#1b1b1b; padding:30px 20px; height:100vh; display:flex; flex-direction:column; gap:25px; border-right:2px solid #1db95466; transition:0.3s; }
 .logo { font-size:32px; font-weight:bold; color:#1db954; margin-bottom:20px; }
 .sidebar a { color:#ccc; text-decoration:none; padding:12px; border-radius:20px; transition:0.2s; font-weight:500; cursor:pointer; }
 .sidebar a:hover { background:#1db954; color:#000; }
-.content { flex:1; padding:40px; overflow-x:hidden; }
-
-.trackContainer { display:flex; gap:12px; overflow-x:auto; padding-bottom:10px; margin-bottom:30px; }
-.track { min-width:220px; background:#1f1f1f; padding:12px; border-radius:20px; display:flex; flex-direction:column; gap:8px; flex-shrink:0; align-items:center; }
-.track span { font-size:14px; word-break:break-word; text-align:center; }
-.track button { border:none; cursor:pointer; transition:0.2s; font-weight:bold; background:#1db954; color:#000; padding:8px 20px; border-radius:50px; font-size:14px; }
-.track button:hover { transform:scale(1.1); background:#1aff6b;}
-
-#customPlayer { margin-top:30px; padding:20px; background:#1f1f1f; border-radius:30px; display:flex; align-items:center; gap:20px; border:2px solid #1db95433; max-width:600px; }
+.content { flex:1; padding:40px; overflow-x:hidden; transition:0.3s; }
+.trackContainer { display:flex; gap:12px; overflow-x:auto; padding-bottom:10px; flex-wrap:nowrap; }
+.track { min-width:220px; background:#1f1f1f; padding:12px; border-radius:20px; display:flex; flex-direction:column; gap:8px; flex-shrink:0; }
+.track span { font-size:14px; word-break:break-word; }
+button { border:none; cursor:pointer; transition:0.2s; font-weight:bold; }
+.play-btn, .preview-btn, #playPause { background:#1db954; color:#000; padding:8px 20px; border-radius:50px; font-size:14px; }
+.play-btn:hover, .preview-btn:hover, #playPause:hover { transform:scale(1.1); background:#1aff6b; }
+#customPlayer { margin-top:30px; padding:20px; background:#1f1f1f; border-radius:30px; display:flex; align-items:center; gap:20px; border:2px solid #1db95433; transition:0.3s; }
 #playPause { border-radius:50px; padding:15px 20px; font-size:20px; }
 #seek { flex:1; height:10px; border-radius:10px; background:#333; -webkit-appearance:none; }
 #seek::-webkit-slider-thumb { -webkit-appearance:none; width:18px; height:18px; border-radius:50%; background:#1db954; cursor:pointer; }
 #seek::-moz-range-thumb { width:18px; height:18px; border-radius:50%; background:#1db954; cursor:pointer; }
 #time { width:60px; text-align:right; color:#bbb; }
 #volume { -webkit-appearance:none; width:150px; height:8px; border-radius:4px; background:#333; cursor:pointer; }
-#volume::-webkit-slider-thumb { -webkit-appearance:none; width:16px; height:16px; border-radius:50%; background:#1db954; cursor:pointer; }
-#volume::-moz-range-thumb { width:16px; height:16px; border-radius:50%; background:#1db954; cursor:pointer; }
+#volume::-webkit-slider-thumb { width:16px; height:16px; border-radius:50%; background:#1db954; cursor:pointer; }
+input[type="text"]{ padding:8px; border-radius:20px; border:none; width:100%; margin-bottom:10px; }
 
-#uploadWrapper { margin-bottom:25px; }
-#uploadLabel { display:inline-block; cursor:pointer; background:#1db954; color:#000; padding:8px 20px; border-radius:50px; font-weight:bold; transition:0.2s;}
-#uploadLabel:hover { transform:scale(1.1); background:#1aff6b;}
-#upload { display:none; }
+/* Mobile Styles */
+@media (max-width: 600px) {
+  body { flex-direction:column; }
+  .sidebar { width:100%; height:auto; flex-direction:row; overflow-x:auto; padding:10px; border-right:none; border-bottom:2px solid #1db95466; }
+  .sidebar a { padding:8px; font-size:12px; }
+  .logo { font-size:20px; margin-bottom:0; }
+  .content { padding:20px; }
+  .track { min-width:160px; }
+  #customPlayer { flex-direction:column; gap:10px; }
+  #playPause { width:100%; font-size:18px; }
+  #seek, #volume { width:100%; }
+}
 </style>
 </head>
 <body>
 
 <div class="sidebar">
   <div class="logo">Soundify</div>
-  <a id="homeBtn">Meine Songs</a>
-  <a id="freeSongsBtn">Free Songs</a>
+  <a id="homeBtn">Home</a>
+  <a id="freeMusicBtn">Free Songs</a>
 </div>
 
 <div class="content">
-  <!-- Home / Eigene Songs -->
+  <!-- Home View -->
   <div id="homeView">
-    <h2>Eigene Songs hochladen</h2>
+    <h2>Musik hochladen (max. 5 Songs in Tabelle)</h2>
     <div id="uploadWrapper">
       <label id="uploadLabel" for="upload">Musik hochladen</label>
       <input id="upload" type="file" accept="audio/*" multiple/>
     </div>
-    <div id="uploadedTrackList" class="trackContainer"></div>
+    <h2>Saved Songs</h2>
+    <div id="trackList" class="trackContainer"></div>
+    <div id="customPlayer">
+      <button id="playPause">▶</button>
+      <input type="range" id="seek" min="0" max="100" value="0">
+      <span id="time">0:00</span>
+      <input type="range" id="volume" min="0" max="1" step="0.01" value="1">
+    </div>
+    <audio id="player" style="display:none;"></audio>
   </div>
 
-  <!-- Free Songs -->
-  <div id="freeSongsView" style="display:none;">
+  <!-- Free Songs View -->
+  <div id="freeMusicView" style="display:none;">
     <h2>Free Songs</h2>
-    <div id="freeTrackList" class="trackContainer"></div>
+    <div id="freeSongList" class="trackContainer"></div>
   </div>
-
-  <!-- Player -->
-  <div id="customPlayer">
-    <button id="playPause">▶</button>
-    <input type="range" id="seek" min="0" max="100" value="0">
-    <span id="time">0:00</span>
-    <input type="range" id="volume" min="0" max="1" step="0.01" value="1">
-  </div>
-
-  <audio id="player" style="display:none;"></audio>
 </div>
 
 <script>
-// Sidebar Navigation
-const homeView = document.getElementById("homeView");
-const freeSongsView = document.getElementById("freeSongsView");
-const homeBtn = document.getElementById("homeBtn");
-const freeSongsBtn = document.getElementById("freeSongsBtn");
+// Device detection
+const isMobile = /Mobi|Android/i.test(navigator.userAgent);
 
-homeBtn.onclick = ()=>{ homeView.style.display="block"; freeSongsView.style.display="none"; displayUploadedSongs(); }
-freeSongsBtn.onclick = ()=>{ homeView.style.display="none"; freeSongsView.style.display="block"; displayFreeSongs(); }
+// Views
+const homeView = document.getElementById("homeView");
+const freeMusicView = document.getElementById("freeMusicView");
+const homeBtn = document.getElementById("homeBtn");
+const freeMusicBtn = document.getElementById("freeMusicBtn");
+homeBtn.onclick = ()=>{ homeView.style.display="block"; freeMusicView.style.display="none"; }
+freeMusicBtn.onclick = ()=>{ homeView.style.display="none"; freeMusicView.style.display="block"; displayFreeSongs(); }
 
 // Player
 const player = document.getElementById("player");
@@ -86,114 +93,79 @@ const playPause = document.getElementById("playPause");
 const seek = document.getElementById("seek");
 const time = document.getElementById("time");
 const volume = document.getElementById("volume");
+let currentFileURL=null;
 let isSeeking=false;
 
-// Uploaded Songs
-const upload = document.getElementById("upload");
-const uploadedTrackList = document.getElementById("uploadedTrackList");
-let uploadedSongs = JSON.parse(localStorage.getItem("uploadedSongs") || "[]");
+// Storage
+const SONGS_KEY="savedSongs";
+const MAX_SONGS_DISPLAY=5;
 
-// Upload Event (keine Duplikate)
+// Saved Songs Upload
+const upload = document.getElementById("upload");
+const trackList = document.getElementById("trackList");
 upload.addEventListener("change", async ()=>{
   const files = Array.from(upload.files);
-  for(const file of files){
-    // Prüfen ob Song bereits existiert
-    const exists = uploadedSongs.some(s => s.name === file.name && s.type === file.type);
-    if(exists) continue; // überspringen
+  let saved = JSON.parse(localStorage.getItem(SONGS_KEY)||"[]");
 
-    const base64 = await fileToBase64(file);
-    uploadedSongs.push({ name: file.name, data: base64, type: file.type });
+  for(const file of files){
+    // Keine Duplikate
+    if(saved.some(s=>s.name===file.name)) continue;
+    saved.push({name:file.name,data:await fileToBase64(file),type:file.type});
   }
-  localStorage.setItem("uploadedSongs", JSON.stringify(uploadedSongs));
-  displayUploadedSongs();
+
+  localStorage.setItem(SONGS_KEY,JSON.stringify(saved));
+  displaySavedSongs();
 });
 
-// Display Uploaded Songs (nur die letzten 5)
-function displayUploadedSongs(){
-  uploadedTrackList.innerHTML="";
-  const songsToShow = uploadedSongs.slice(-5).reverse(); // neueste oben
-  songsToShow.forEach(song=>{
-    const div = document.createElement("div");
-    div.className="track";
-    const nameSpan = document.createElement("span");
-    nameSpan.textContent = song.name;
-
-    const playBtn = document.createElement("button");
-    playBtn.textContent="Play";
-    playBtn.onclick=()=>{
-      player.src = URL.createObjectURL(base64ToBlob(song.data,song.type));
-      player.play();
-      playPause.textContent="⏸";
-    };
-
-    const previewBtn = document.createElement("button");
-    previewBtn.textContent="Vorschau";
-    previewBtn.onclick=()=>{
-      const previewAudio = new Audio(URL.createObjectURL(base64ToBlob(song.data,song.type)));
-      previewAudio.play();
-      setTimeout(()=>previewAudio.pause(),5000);
-    };
-
-    div.appendChild(nameSpan);
-    div.appendChild(playBtn);
-    div.appendChild(previewBtn);
-    uploadedTrackList.appendChild(div);
+function displaySavedSongs(){
+  trackList.innerHTML="";
+  const saved = JSON.parse(localStorage.getItem(SONGS_KEY)||"[]");
+  saved.slice(0, MAX_SONGS_DISPLAY).forEach((song,index)=>{
+    const div=document.createElement("div"); div.className="track";
+    const nameSpan=document.createElement("span"); nameSpan.textContent=song.name;
+    const playBtn=document.createElement("button"); playBtn.className="play-btn"; playBtn.textContent="Play";
+    playBtn.onclick=()=>{ playSong(song); }
+    div.appendChild(nameSpan); div.appendChild(playBtn);
+    trackList.appendChild(div);
   });
 }
 
-// Free Songs (Royalty-Free)
+// Free Songs (Beispiel-Links)
 const freeSongs = [
-  { name: "Sunny", url: "https://www.bensound.com/bensound-music/bensound-sunny.mp3", artist: "Bensound" },
-  { name: "Energy", url: "https://www.bensound.com/bensound-music/bensound-energy.mp3", artist: "Bensound" },
-  { name: "Adventure", url: "https://www.bensound.com/bensound-music/bensound-adventure.mp3", artist: "Bensound" }
+  {name:"NCS Song 1", url:"https://example.com/song1.mp3"},
+  {name:"NCS Song 2", url:"https://example.com/song2.mp3"},
+  {name:"NCS Song 3", url:"https://example.com/song3.mp3"},
 ];
 
-const freeTrackList = document.getElementById("freeTrackList");
+const freeSongList = document.getElementById("freeSongList");
 function displayFreeSongs(){
-  freeTrackList.innerHTML="";
+  freeSongList.innerHTML="";
   freeSongs.forEach(song=>{
-    const div = document.createElement("div");
-    div.className="track";
-    const nameSpan = document.createElement("span");
-    nameSpan.textContent = `${song.name} - ${song.artist}`;
-    const playBtn = document.createElement("button");
-    playBtn.textContent="Play";
-    playBtn.onclick=()=>{
-      player.src=song.url;
-      player.play();
-      playPause.textContent="⏸";
-    };
-    div.appendChild(nameSpan);
-    div.appendChild(playBtn);
-    freeTrackList.appendChild(div);
+    const div=document.createElement("div"); div.className="track";
+    const nameSpan=document.createElement("span"); nameSpan.textContent=song.name;
+    const playBtn=document.createElement("button"); playBtn.className="play-btn"; playBtn.textContent="Play";
+    playBtn.onclick=()=>{ stopAllAudio(); player.src=song.url; player.play(); playPause.textContent="⏸"; }
+    div.appendChild(nameSpan); div.appendChild(playBtn);
+    freeSongList.appendChild(div);
   });
 }
 
 // Player Controls
-playPause.onclick = ()=>{
-  if(!player.src) return;
-  if(player.paused){ player.play(); playPause.textContent="⏸"; }
-  else{ player.pause(); playPause.textContent="▶"; }
-};
-
-player.addEventListener("timeupdate",()=>{
-  if(!isSeeking && player.duration){
-    seek.value=(player.currentTime/player.duration)*100;
-    time.textContent=formatTime(player.currentTime);
-  }
-});
+playPause.onclick=()=>{ if(!player.src) return; if(player.paused){ player.play(); playPause.textContent="⏸"; } else{ player.pause(); playPause.textContent="▶"; } };
+player.addEventListener("timeupdate",()=>{ if(!isSeeking && player.duration){ seek.value=(player.currentTime/player.duration)*100; time.textContent=formatTime(player.currentTime); } });
 seek.addEventListener("input",()=>{ if(player.duration) player.currentTime=(seek.value/100)*player.duration; });
-seek.addEventListener("mousedown",()=>isSeeking=true);
-seek.addEventListener("mouseup",()=>isSeeking=false);
-volume.addEventListener("input",()=>player.volume=volume.value);
+seek.addEventListener("mousedown",()=>isSeeking=true); seek.addEventListener("mouseup",()=>isSeeking=false);
+volume.addEventListener("input",()=>{ player.volume=volume.value; });
 
 // Hilfsfunktionen
 function formatTime(seconds){ const mins=Math.floor(seconds/60); const secs=String(Math.floor(seconds%60)).padStart(2,"0"); return `${mins}:${secs}`; }
+function stopAllAudio(){ if(!player.paused){ player.pause(); playPause.textContent="▶"; } }
 function fileToBase64(file){ return new Promise((res,rej)=>{ const reader=new FileReader(); reader.onload=()=>res(reader.result.split(',')[1]); reader.onerror=rej; reader.readAsDataURL(file); }); }
+function playSong(song){ stopAllAudio(); currentFileURL=URL.createObjectURL(base64ToBlob(song.data,song.type)); player.src=currentFileURL; player.play(); playPause.textContent="⏸"; }
 function base64ToBlob(base64,type){ const binary=atob(base64); const len=binary.length; const buffer=new Uint8Array(len); for(let i=0;i<len;i++) buffer[i]=binary.charCodeAt(i); return new Blob([buffer],{type:type}); }
 
 // Initial
-displayUploadedSongs();
+displaySavedSongs();
 </script>
 
 </body>
